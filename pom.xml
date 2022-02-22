@@ -2,52 +2,67 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ablx.formation</groupId>
-    <artifactId>techlead-slides</artifactId>
+    <groupId>com.xavierbouclet</groupId>
+    <artifactId>java-slow-slides</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
-    <name>Présentation Techlead</name>
-    <description>Slides de présentation retex techlead</description>
+    <name>java-slow-slides</name>
+    <description>Présentation Java est lent? Vous êtes sûr?</description>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <project.slides.directory>${project.build.directory}/generated-slides</project.slides.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <project.slides.directory>${project.build.directory}/generated-slides</project.slides.directory>
-        <asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
-        <asciidoctorj.version>1.5.6</asciidoctorj.version>
-        <jruby.version>1.7.26</jruby.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <asciidoctor.maven.plugin.version>2.2.1</asciidoctor.maven.plugin.version>
+        <asciidoctorj.version>2.3.0</asciidoctorj.version>
+        <asciidoctorj.pdf.version>1.6.2</asciidoctorj.pdf.version>
+        <jruby.version>9.2.9.0</jruby.version>
         <revealjs.version>3.9.2</revealjs.version>
-        <asciidoctor-revealjs.version>1.1.3</asciidoctor-revealjs.version>
-        <asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
-        <asciidoctorj.diagram.version>1.5.4.1</asciidoctorj.diagram.version>
-
-        <project.slides.directory>${project.build.directory}/generated-slides</project.slides.directory>
+        <!-- Use 'master' as version and remove the 'v' prefixing the download url to use the current snapshot version  -->
+        <asciidoctor-revealjs.version>master</asciidoctor-revealjs.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>rubygems</groupId>
+            <artifactId>asciidoctor-revealjs</artifactId>
+            <version>4.0.1</version>
+            <type>gem</type>
+            <!-- Avoid downloading gems included in AsciidoctorJ -->
+            <exclusions>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>asciidoctor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>thread_safe</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rubygems</groupId>
+                    <artifactId>concurrent-ruby</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 
     <build>
         <defaultGoal>process-resources</defaultGoal>
+        <extensions>
+            <extension> <!-- this allows us to download gems -->
+                <groupId>org.torquebox.mojo</groupId>
+                <artifactId>mavengem-wagon</artifactId>
+                <version>1.0.3</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.3.0</version>
+                <version>1.6.0</version>
                 <executions>
-                    <execution>
-                        <id>install-asciidoctor-revealjs</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>https://github.com/asciidoctor/asciidoctor-reveal.js/archive/v${asciidoctor-revealjs.version}.zip</url>
-                            <unpack>true</unpack>
-                            <outputFileName>asciidoctor-reveal.js-${asciidoctor-revealjs.version}.zip</outputFileName>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>install-revealjs</id>
                         <phase>generate-resources</phase>
@@ -60,6 +75,26 @@
                             <outputFileName>reveal.js-${revealjs.version}.zip</outputFileName>
                             <outputDirectory>${project.slides.directory}</outputDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>de.saumya.mojo</groupId>
+                <artifactId>gem-maven-plugin</artifactId>
+                <version>1.1.8</version>
+                <configuration>
+                    <jrubyVersion>${jruby.version}</jrubyVersion>
+                    <gemHome>${project.build.directory}/gems</gemHome>
+                    <gemPath>${project.build.directory}/gems</gemPath>
+                </configuration>
+                <executions>
+                    <!-- Install required gems in target directory -->
+                    <execution>
+                        <id>install-gems</id>
+                        <goals>
+                            <goal>initialize</goal>
+                        </goals>
+                        <phase>initialize</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -80,23 +115,14 @@
                         <artifactId>asciidoctorj</artifactId>
                         <version>${asciidoctorj.version}</version>
                     </dependency>
-                    <!-- génération du pdf -->
                     <dependency>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj-pdf</artifactId>
                         <version>${asciidoctorj.pdf.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctorj-diagram</artifactId>
-                        <version>${asciidoctorj.diagram.version}</version>
-                    </dependency>
                 </dependencies>
                 <configuration>
-                    <sourceDirectory>src/site/asciidoc</sourceDirectory>
-                    <requires>
-                        <require>asciidoctor-diagram</require>
-                    </requires>
+                    <sourceDirectory>src/docs/asciidoc</sourceDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -106,10 +132,13 @@
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
+                            <!-- include the asciidoctor-revealjs gem -->
+                            <gemPath>${project.build.directory}/gems</gemPath>
+                            <requires>
+                                <require>asciidoctor-revealjs</require>
+                            </requires>
                             <outputDirectory>${project.slides.directory}</outputDirectory>
                             <backend>revealjs</backend>
-                            <templateDir>${project.build.directory}/asciidoctor-reveal.js-${asciidoctor-revealjs.version}/templates</templateDir>
-                            <sourceHighlighter>highlightjs</sourceHighlighter>
                             <attributes>
                                 <!--
                                     As we are downloading reveal.js in runtime, it sits in a nonstandard folder `reveal.js-${revealjs.version}`
@@ -120,6 +149,10 @@
                                 <revealjs_theme>solarized</revealjs_theme>
                                 <revealjs_transition>linear</revealjs_transition>
                                 <project-version>${project.version}</project-version>
+                                <!-- can use any pygments/rouge css here -->
+                                <rouge-css>class</rouge-css>
+                                <customcss>styles/monokai.css</customcss>
+                                <source-highlighter>rouge</source-highlighter>
                             </attributes>
                         </configuration>
                     </execution>
@@ -131,16 +164,8 @@
                         </goals>
                         <configuration>
                             <backend>pdf</backend>
-                            <!-- Since 1.5.0-alpha.9 PDF back-end can use 'rouge' as well as 'coderay'
-                            for source highlighting -->
-                            <!-- Due to a known issue on windows, it is recommended to use 'coderay' until an new version of 'rouge' is released.
-                                    see discussions: https://github.com/asciidoctor/asciidoctor-maven-examples/pull/58
-                                                     https://github.com/asciidoctor/asciidoctorj-pdf/issues/3
-                                                     https://github.com/jneen/rouge/issues/661
-                            -->
-                            <sourceHighlighter>coderay</sourceHighlighter>
                             <attributes>
-                                <icons>font</icons>
+                                <source-highlighter>rouge</source-highlighter>
                                 <pagenums/>
                                 <toc/>
                                 <idprefix/>
@@ -154,5 +179,11 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>mavengems</id>
+            <url>mavengem:https://rubygems.org</url>
+        </repository>
+    </repositories>
 
 </project>

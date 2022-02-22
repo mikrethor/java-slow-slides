@@ -1,0 +1,125 @@
+= Java est lent? Vous êtes sûr?
+Xavier Bouclet
+v0.1, 2022-02-25: first version
+:example-caption!:
+ifndef::imagesdir[:imagesdir: images]
+ifndef::sourcedir[:sourcedir: ../../main/java]
+
+== À propos de moi
+
+[%step]
+- Techlead/Développeur
+- Montréal Jug and Devoxx4kids co-organiser
+- https://xavierbouclet.com/[https://xavierbouclet.com]
+- @XavierBouclet
+
+== La Fabrique Digit'Owl
+
+La Fabrique Digit'Owl image:digitowl-qr-code.png[Anatowl,width=15%] cherche des développeurs :
+
+- backend
+- frontend
+- mobile
+
+== Write Once, Run Anywhere ?
+
+* Conteneur
+* Système cible connu
+* Cloud besoin d'être le plus léger possible
+
+=== Comment Faire ?
+
+GraalVM : AOT Native Image Compilation
+
+==  Place Au Code
+
+[%step]
+* HelloWorld
+* Small API
+
+== Comparaison
+
+//spring-boot :
+//    compilation natif : 03:25 min
+//    compilation java : 8.104 s
+//    execution java : 7.861s
+//    execution native : 1.226s
+//    size natif : 108.7 avec upx 33.5
+//    size jar : 41.1
+//quarkus :
+//    compilation natif : 2min22
+//    compilation java : 11s640
+//    execution java :  2.855s
+//    execution native : 0.634 et 0589 avec upx
+//    size natif : 68.2MB et 22.1 avec upx
+//    size jar : 52.8
+//micronaut :
+//    compilation natif : 2:47 min
+//    compilation java : 7.3s
+//    execution java : 2566ms
+//    execution native : 952ms et  933ms avec upx
+//    size natif 91mb avec upx 28,7
+//    size jar : 30.5
+//
+//[cols=7*,grid=rows,frame=none]
+//|===
+//|Framework
+//|c.n. min
+//|c.j. ms
+//|e.n. ms
+//|e.j. ms
+//|t.n. MB
+//|t.j. MB
+//
+//|Micronaut
+//|2:47
+//|7.3s
+//|952 (933)
+//|2566
+//|91 (28.7)
+//|30.5
+//
+//|Quarkus
+//|2:22
+//|11640
+//|634 (589)
+//|2855
+//|68.2 (22.1)
+//|52.8
+//
+//|Spring Boot
+//|03:25
+//|8104
+//|1226 (1190)
+//|7861
+//|108.7 (33.5)
+//|41.1
+//
+//|===
+image::frameworks-comparison.png[fd]
+
+== Conclusion
+
+- Vous pouvez essayer avec votre stack existante
+- Vous allez certainement devoir indiquer des choses à GraalVM pour que ça fonctionne
+- N'enterrer pas la JVM si vite.
+
+== Aller plus loin
+:icons: font
+
+=== Liens
+[bibliography]
+- https://github.com/mikrethor/native-apis[Code de la présentation]
+- https://www.graalvm.org/[GraalVM]
+- https://guides.micronaut.io/latest/micronaut-creating-first-graal-app-maven-java.html#generate-a-micronaut-application-native-image-with-graalvm[Compiler nativement avec Micronaut]
+- https://quarkus.io/guides/building-native-image[Compiler nativement avec Quarkus]
+- https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/[Compiler nativement avec Spring Boot]
+
+=== C'est la fin !
+
+[.thumb]
+image::fin.png[fin]
+
+
+
+
