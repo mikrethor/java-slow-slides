@@ -33,6 +33,7 @@ GraalVM : AOT Native Image Compilation
 
 === Avantages :
 
+[%step]
 - scale up/down
 - retour arrière extrêmement rapide
 - serverless, démarrage à froid presque gratuit.
