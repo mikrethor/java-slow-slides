@@ -31,6 +31,21 @@ La Fabrique Digit'Owl image:digitowl-qr-code.png[Anatowl,width=15%] cherche des 
 
 GraalVM : AOT Native Image Compilation
 
+=== Advantages :
+
+- scale up / down
+- extremely fast rollback
+- serverless, cold start almost free.
+
+=== Limitations
+
+[%step]
+- Dynamic classloading => not supported
+- JVMTI, JMX and other VM interfaces (no agent) => not supported
+- Reflection => partially supported
+
+https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md[SubstrateVM limitations]
+
 ==  Place Au Code
 
 [%step]
